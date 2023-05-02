@@ -1,10 +1,25 @@
 function returnsThree() {
-  // Your code here
+  return 3;
 }
 
 function reciprocal(n) {
-  // Your code here
+  if (n <= 0 || n > 1000000) {
+    throw RangeError('provide a number from 1 to 1000000');
+  }
+
+  let result = 1 / n;
+
+  if (!Number.isInteger(result)) {
+    let countDecimal = result.toString().split('.')[1];
+
+    if (countDecimal.length > 3) {
+      result = Number(result.toFixed(3));
+    }
+  }
+
+  return result;
 }
+
 
 module.exports = {
   returnsThree,
