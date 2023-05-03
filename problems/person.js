@@ -36,13 +36,18 @@ class Person {
   }
 
   static greetAll(arr) {
+    if (!Array.isArray(arr)) {
+      throw Error("greetAll only takes an array as an argument");
+    }
 
+    if (!arr.every((el) => el instanceof Person)) {
+      throw Error("All items in array must be Person class instances.");
+    }
+
+    const helloStr = arr.map(person => person.sayHello());
+
+    return helloStr;
   }
 }
-let zee = new Person('Xee', 44);
-console.log(zee.tryUpdate( {name: 'Ali', age: 33} ));
-console.log(zee.tryUpdate( {} ));
-
-Person.greetAll([])
 
 module.exports = Person;

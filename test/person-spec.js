@@ -1,7 +1,6 @@
 const chai = require("chai"),
   expect = chai.expect;
 
-const { spy } = require("chai");
 const spices = require("chai-spies");
 chai.use(spices);
 
@@ -11,13 +10,12 @@ describe("class Person", function () {
   beforeEach(function () {
     ali = new Person("Ali", 28);
   });
-  context("constructor", function () {
-    it("Should have a name and age property", function () {
-      expect(ali).to.have.keys("name", "age");
-    });
+
+  it("Should have a name and age property", function () {
+    expect(ali).to.have.all.keys("name", "age");
   });
 
-  describe("this.sayHello()", function () {
+  describe("sayHello() instance method", function () {
     it("Should exist", function () {
       const spy = chai.spy.on(ali, "sayHello");
       ali.sayHello();
@@ -29,7 +27,7 @@ describe("class Person", function () {
     });
   });
 
-  describe("this.visit(person)", function () {
+  describe("visit(person) instance method", function () {
     beforeEach(function () {
       person1 = new Person("Mai", 22);
       person2 = new Person("Erin", 25);
@@ -41,18 +39,18 @@ describe("class Person", function () {
       expect(person2).to.be.instanceOf(Person);
     });
 
-    it("Should return a string stating that, this instance visit the passed-in person instance ", function () {
+    it("Should return a string stating that, current visit the passed person", function () {
       expect(person1.visit(person2)).to.equal("Mai visited Erin");
     });
 
-    context("this.switchVisit(person)", function () {
+    context("switchVisit(person) instance method", function () {
       it("should invoke the visit function of the parameter, passing in the current instance as the argument", function () {
         expect(person1.switchVisit(person2)).to.equal("Erin visited Mai");
       });
     });
   });
 
-  describe("this.update(obj)", function () {
+  describe("update(obj) instance method", function () {
     context("if passed in with an invalid argument", function () {
       it("Should throw an error if argument is not a valid object", function () {
         expect(() => ali.update({})).to.throw(
@@ -72,7 +70,7 @@ describe("class Person", function () {
     });
   });
 
-  describe("this.tryUpdate(obj)", function () {
+  describe("tryUpdate(obj) instance method", function () {
     context("if update is successful", function () {
       it("should not throw an error but return true", function () {
         let result = ali.tryUpdate({ name: "code", age: 34 });
@@ -90,47 +88,48 @@ describe("class Person", function () {
     });
   });
 
-  describe("Person.greatAll(arr)", function () {
+  describe("greatAll(arr) static method", function () {
     beforeEach(function () {
       code = new Person("Code", 1);
       zee = new Person("Zee", 25);
     });
 
-    context("Invalid input", function () {
-      it("Should throw error if input is not an array", function () {
-        const badInput = "not an array but string";
-        expect(Person.greetAll(badInput)).to.throw(
-          Error,
-          "greetAll only takes an array as an argument"
-        );
-      });
+    it("Should throw error if input is not an array", function () {
+      const badInput = "not an array but string";
 
-      it("Should throw error if persons in array are not Person instance", function () {
-        const badArray = ["ghost", ali, code];
-        expect(badArray).to.throw(Error, "All items must be a Person instance");
-      });
+      expect(() => Person.greetAll(badInput)).to.throw(
+        Error,
+        "greetAll only takes an array as an argument"
+      );
     });
 
-    context("If input is valid", function () {
-      it("Should invoke sayHello() function on each person", function () {
-        const spyCode = chai.spy.on(code, "sayHello");
-        const spyZee = chai.spy.on(zee, "sayHello");
-        const spyAli = chai.spy.on(ali, "sayHello");
-        Person.greetAll([ali, code, zee]);
+    it("should throw an error if array does not contain instances of Person", function () {
+      const badInput = ["ghost", ali];
 
-        expect(spyCode).to.have.been.called.once;
-        expect(spyAli).to.have.been.called.once;
-        expect(spyZee).to.have.been.called.once;
-      });
+      expect(() => Person.greetAll(badInput)).to.throw(
+        Error,
+        "All items in array must be Person class instances."
+      );
+    });
 
-      it("Should return an array of strings from invoking sayHello on each person", function () {
-        let returnString = Person.greetAll([ali, code, zee]);
-        expect(returnString).to.equal([
-          "Happy new year Ali!",
-          "Happy new year Code!",
-          "Happy new year Zee!",
-        ]);
-      });
+    it("Should invoke sayHello() function on each person", function () {
+      const spyCode = chai.spy.on(code, "sayHello");
+      const spyZee = chai.spy.on(zee, "sayHello");
+      const spyAli = chai.spy.on(ali, "sayHello");
+      Person.greetAll([ali, code, zee]);
+
+      expect(spyCode).to.have.been.called.once;
+      expect(spyAli).to.have.been.called.once;
+      expect(spyZee).to.have.been.called.once;
+    });
+
+    it("Should return an array of strings from invoking sayHello on each person", function () {
+      let returnString = Person.greetAll([ali, code, zee]);
+      expect(returnString).to.deep.equal([
+        "Happy new year Ali!",
+        "Happy new year Code!",
+        "Happy new year Zee!",
+      ]);
     });
   });
 });
